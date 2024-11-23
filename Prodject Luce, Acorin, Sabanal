@@ -1,0 +1,198 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+
+// Username: Group11
+// Passwrod: Svci2024
+
+
+public class QuizApp extends JFrame {
+    private int currentQuestionIndex = 0;
+    private int score = 0;
+
+    private String[] questions = {
+            "What is the time complexity of binary search in a sorted array?",
+            "Which data structure uses the Last In First Out (LIFO) principle?",
+            "What is the worst-case time complexity of quicksort?",
+            "Which algorithm is used for finding the shortest path in a graph?",
+            "What data structure is typically used for implementing a priority queue?"
+    };
+
+    private String[][] options = {
+            {"A) O(n)", "B) O(log n)", "C) O(n log n)", "D) O(1)"},
+            {"A) Queue", "B) Stack", "C) Array", "D) Linked List"},
+            {"A) O(n)", "B) O(n log n)", "C) O(n²)", "D) O(log n)"},
+            {"A) Dijkstra's Algorithm", "B) Kruskal's Algorithm", "C) Prim's Algorithm", "D) A* Algorithm"},
+            {"A) Heap", "B) Stack", "C) Array", "D) Linked List"}
+    };
+
+    private int[] answers = {1, 1, 2, 0, 0};
+
+    private JLabel titleLabel;
+    private JLabel questionLabel;
+    private JRadioButton[] optionButtons;
+    private ButtonGroup optionsGroup;
+    private JButton nextButton;
+
+    public QuizApp() {
+        setTitle("DSA Quiz Application");
+        setSize(600, 400);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLayout(new BorderLayout(10, 10));
+
+
+        getContentPane().setBackground(new Color(240, 248, 255));
+
+
+        titleLabel = new JLabel("Data Structures and Algorithms Quiz", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Verdana", Font.BOLD, 24));
+        titleLabel.setForeground(new Color(0, 102, 204));
+        add(titleLabel, BorderLayout.NORTH);
+
+        JPanel questionPanel = new JPanel();
+        questionPanel.setLayout(new BorderLayout(10, 10));
+        questionPanel.setBackground(new Color(255, 255, 255));
+
+        questionLabel = new JLabel("", SwingConstants.CENTER);
+        questionLabel.setFont(new Font("Arial", Font.PLAIN, 18));
+        questionLabel.setForeground(new Color(0, 0, 0));
+        questionPanel.add(questionLabel, BorderLayout.NORTH);
+
+        JPanel optionsPanel = new JPanel();
+        optionsPanel.setLayout(new GridLayout(4, 1));
+        optionsPanel.setBackground(new Color(255, 255, 255));
+        optionsGroup = new ButtonGroup();
+        optionButtons = new JRadioButton[4];
+
+        for (int i = 0; i < optionButtons.length; i++) {
+            optionButtons[i] = new JRadioButton();
+            optionButtons[i].setFont(new Font("Arial", Font.PLAIN, 16));
+            optionButtons[i].setBackground(new Color(255, 255, 255));
+            optionButtons[i].setForeground(new Color(0, 0, 102));
+            optionsGroup.add(optionButtons[i]);
+            optionsPanel.add(optionButtons[i]);
+        }
+
+        questionPanel.add(optionsPanel, BorderLayout.CENTER);
+        add(questionPanel, BorderLayout.CENTER);
+
+        nextButton = new JButton("Next");
+        nextButton.setFont(new Font("Arial", Font.BOLD, 16));
+        nextButton.setBackground(new Color(0, 153, 51));
+        nextButton.setForeground(Color.WHITE);
+        nextButton.setFocusPainted(false);
+        nextButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        nextButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                checkAnswer();
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questions.length) {
+                    displayQuestion();
+                } else {
+                    showResults();
+                }
+            }
+        });
+
+        add(nextButton, BorderLayout.SOUTH);
+        displayQuestion();
+    }
+
+    private void displayQuestion() {
+        questionLabel.setText(questions[currentQuestionIndex]);
+        for (int i = 0; i < optionButtons.length; i++) {
+            optionButtons[i].setText(options[currentQuestionIndex][i]);
+            optionButtons[i].setSelected(false);
+        }
+    }
+
+    private void checkAnswer() {
+        int selectedOption = -1;
+        for (int i = 0; i < optionButtons.length; i++) {
+            if (optionButtons[i].isSelected()) {
+                selectedOption = i;
+                break;
+            }
+        }
+        if (selectedOption == answers[currentQuestionIndex]) {
+            score++;
+        }
+    }
+
+    private void showResults() {
+        JOptionPane.showMessageDialog(this, "Your score is: " + score + "/" + questions.length,
+                "Quiz Results", JOptionPane.INFORMATION_MESSAGE);
+        System.exit(0);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            LoginForm loginForm = new LoginForm();
+            loginForm.setVisible(true);
+        });
+    }
+}
+
+class LoginForm extends JFrame {
+    private JTextField usernameField;
+    private JPasswordField passwordField;
+
+    public LoginForm() {
+        setTitle("Login");
+        setSize(400, 200);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+
+        getContentPane().setBackground(new Color(240, 248, 255));
+
+        JLabel usernameLabel = new JLabel("Username:");
+        usernameField = new JTextField(15);
+
+        JLabel passwordLabel = new JLabel("Password:");
+        passwordField = new JPasswordField(15);
+
+        JButton loginButton = new JButton("Login");
+        loginButton.setBackground(new Color(0, 153, 51));
+        loginButton.setForeground(Color.WHITE);
+        loginButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String username = usernameField.getText();
+                String password = new String(passwordField.getPassword());
+
+                if ("Group11".equals(username) && "Svci2024".equals(password)) {
+                    setVisible(false);
+                    QuizApp quizApp = new QuizApp();
+                    quizApp.setVisible(true);
+                } else {
+                    JOptionPane.showMessageDialog(LoginForm.this, "Invalid username or password", "Login Failed", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        add(usernameLabel, gbc);
+
+        gbc.gridx = 1;
+        add(usernameField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        add(passwordLabel, gbc);
+
+        gbc.gridx = 1;
+        add(passwordField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 2;
+        gbc.insets = new Insets(20, 10, 10, 10);
+        add(loginButton, gbc);
+    }
+}
